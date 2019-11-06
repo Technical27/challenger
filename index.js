@@ -103,7 +103,8 @@ globals = {
   getUserFromMention,
   commands,
   playQue: new Discord.Collection(),
-  models
+  models,
+  nowPlaying: ''
 };
 
 client.login(config.token);

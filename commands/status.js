@@ -4,6 +4,6 @@ module.exports = {
   description: 'gets bot status',
   usage: '',
   execute: msg => {
-    msg.channel.send('```I\'m pretty sure that the bot works```');
+    msg.channel.send('I\'m pretty sure that the bot works', {code: true});
   }
 };
