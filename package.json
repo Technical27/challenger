@@ -13,6 +13,7 @@
     "ytdl-core": "^1.0.0"
   },
   "devDependencies": {
-    "eslint": "^6.6.0"
+    "eslint": "^6.6.0",
+    "sequelize-cli": "^5.5.1"
   }
 }
