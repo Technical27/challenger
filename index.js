@@ -5,16 +5,10 @@ const path = require('path');
 const decache = require('decache');
 const chalk = require('chalk');
 const winston = require('winston');
-const Sequelize = require('sequelize');
-
+const models = require('./db');
 
 const client = new Discord.Client();
 const commands = new Discord.Collection();
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  logging: false,
-  storage: path.join(__dirname, 'db.sqlite')
-});
 
 const colorFormat = level => {
   if (level === 'info') return chalk.white(level);
@@ -42,7 +36,12 @@ client.on('message', msg => {
   try {
     if (msg.author.bot) return;
 
-    if (!msg.content.startsWith(config.prefix)) return;
+    if (!msg.content.startsWith(config.prefix)) {
+      return models.User.findByPk(msg.author.id).then(user => {
+        if (user) user.addXp();
+        else models.User.create({id: msg.author.id, xp: 1});
+      });
+    }
 
     const args = msg.content.slice(config.prefix.length).split(/\s+/);
     const cmdName = args.shift().toLowerCase();
@@ -103,8 +102,8 @@ globals = {
   isAdmin,
   getUserFromMention,
   commands,
-  sequelize,
-  playQue: new Discord.Collection()
+  playQue: new Discord.Collection(),
+  models
 };
 
 client.login(config.token);
