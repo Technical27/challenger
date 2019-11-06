@@ -102,7 +102,7 @@ globals = {
   isAdmin,
   getUserFromMention,
   commands,
-  playQue: new Discord.Collection(),
+  playQue: [],
   models,
   nowPlaying: ''
 };
