@@ -2,6 +2,9 @@
   "name": "challenger",
   "version": "1.0.0",
   "main": "index.js",
+  "scripts": {
+    "lint": "eslint index.js commands/*.js models/*.js migrations/*.js"
+  },
   "dependencies": {
     "chalk": "^2.4.2",
     "decache": "^4.5.1",
