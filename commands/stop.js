@@ -5,9 +5,9 @@ module.exports = {
   usage: '',
   execute: (msg, args, globals) => {
     if (msg.channel.type !== 'text') return;
+    globals.playQue.set(msg.guild.id, []);
     const vc = msg.client.voice.connections.get(msg.guild.id);
     if (!vc) return;
-    globals.playQue = [];
     vc.disconnect();
   }
 };

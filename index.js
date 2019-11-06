@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const config = require('./config.json');
+const config = require('./config/bot.json');
 const fs = require('fs');
 const path = require('path');
 const decache = require('decache');
@@ -12,6 +12,7 @@ const client = new Discord.Client();
 const commands = new Discord.Collection();
 const sequelize = new Sequelize({
   dialect: 'sqlite',
+  logging: false,
   storage: path.join(__dirname, 'db.sqlite')
 });
 
@@ -103,7 +104,7 @@ globals = {
   getUserFromMention,
   commands,
   sequelize,
-  playQue: []
+  playQue: new Discord.Collection()
 };
 
 client.login(config.token);

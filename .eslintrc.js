@@ -20,7 +20,7 @@ module.exports = {
         ],
         "array-callback-return": "error",
         "array-element-newline": "off",
-        "arrow-body-style": "error",
+        "arrow-body-style": "off",
         "arrow-parens": [
             "error",
             "as-needed"
@@ -178,7 +178,7 @@ module.exports = {
         "no-restricted-modules": "error",
         "no-restricted-properties": "error",
         "no-restricted-syntax": "error",
-        "no-return-assign": "error",
+        "no-return-assign": "off",
         "no-return-await": "error",
         "no-script-url": "error",
         "no-self-compare": "error",
