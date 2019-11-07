@@ -4,9 +4,8 @@ module.exports = {
   description: 'reloads bot commands',
   aliases: [],
   usage: '',
-  execute: (msg, args, globals) => {
-    msg.channel.send('reloading commands', {code: true});
-    return globals.reloadCommands()
+  execute: (msg, args, {reloadCommands}) => {
+    return reloadCommands()
       .then(() => {
         msg.channel.send('finished reloading commands', {code: true});
       })
