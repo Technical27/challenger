@@ -1,19 +1,18 @@
 const Discord = require('discord.js');
 const config = require('./config/bot.json');
-const fs = require('fs');
+const Promise = require('bluebird');
+const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
 const decache = require('decache');
 const chalk = require('chalk');
 const winston = require('winston');
 const models = require('./db');
-
 const client = new Discord.Client();
 const commands = new Discord.Collection();
 
 const colorFormat = level => {
   if (level === 'info') return chalk.white(level);
   else if (level === 'error') return chalk.red(level);
-
   return chalk.grey;
 };
 
@@ -56,7 +55,7 @@ client.on('message', msg => {
     command.execute(msg, args, globals);
   }
   catch (e) {
-    logger.log('error', e.toString());
+    logger.log('error', e);
     msg.channel.send(`something broke and here's the error:\n\`\`\`${e}\`\`\``);
   }
 });
@@ -67,24 +66,64 @@ process.on('SIGINT', async () => {
   process.exit();
 });
 
-const loadCommands = () => {
-  logger.log('info', 'loading commands');
-  fs.readdirSync('commands').filter(f => f.endsWith('.js')).forEach(f => {
-    const modPath = path.join(__dirname, 'commands', f);
-    const cmd = require(modPath);
-    cmd.path = modPath;
-    commands.set(cmd.name, cmd);
+const loadCommand = f => {
+  return new Promise((resolve, reject) => {
+    try {
+      const cmd = require(f);
+      cmd.path = f;
+      commands.set(cmd.name, cmd);
+      logger.log('info', `loaded command ${cmd.name}`);
+      resolve();
+    }
+    catch (e) {
+      reject(e);
+    }
   });
-  globals.commands = commands;
 };
 
-loadCommands();
+const loadCommands = () => {
+  logger.log('info', 'loading commands');
+  return fs.readdirAsync('commands')
+    .then(files => {
+      const filePromises = files.filter(f => f.endsWith('.js'))
+        .map(f => loadCommand(path.join(__dirname, 'commands', f)));
+      return Promise.all(filePromises);
+    })
+    .then(() => {
+      globals.commands = commands;
+    });
+};
+
+const unloadCommand = f => {
+  return new Promise((resolve, reject) => {
+    try {
+      decache(f);
+      resolve();
+    }
+    catch (e) {
+      reject(e);
+    }
+  });
+};
 
 const reloadCommands = () => {
   logger.log('info', 'reloading commands');
-  for (const [, cmd] of commands) decache(cmd.path);
-  loadCommands();
+  return new Promise(resolve => {
+    const unloadPromises = commands.array().map(cmd => unloadCommand(cmd));
+    return Promise.all(unloadPromises)
+      .then(loadCommands)
+      .then(resolve);
+  });
 };
+
+fs.watch('commands', (event, file) => {
+  if (file.endsWith('.js') && event === 'change') {
+    const cmdPath = path.join(__dirname, 'commands', file);
+    unloadCommand(cmdPath)
+      .then(() => loadCommand(cmdPath))
+      .catch(e => logger.log('error', `error reload command: ${e}`));
+  }
+});
 
 const isAdmin = id => config.admins.includes(id);
 
@@ -107,4 +146,6 @@ globals = {
   nowPlaying: ''
 };
 
-client.login(config.token);
+loadCommands()
+  .then(() => client.login(config.token))
+  .catch(e => logger.log('error', `error loading commands: ${e}`));

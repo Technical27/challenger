@@ -10,7 +10,7 @@ const playStream = async (vc, globals) => {
   const con = await vc.join();
   vc.on('disconnect', () => playing = false);
   const disp = con.play(stream);
-  disp.on('end', () => {
+  disp.on('finish', () => {
     if (globals.playQue.length > 0) playStream(vc, globals);
     else {
       playing = false;

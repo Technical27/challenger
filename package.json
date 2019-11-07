@@ -6,6 +6,7 @@
     "lint": "eslint index.js commands/*.js models/*.js migrations/*.js"
   },
   "dependencies": {
+    "bluebird": "^3.7.1",
     "chalk": "^2.4.2",
     "decache": "^4.5.1",
     "discord.js": "discordjs/discord.js",

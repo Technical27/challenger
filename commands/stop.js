@@ -10,5 +10,6 @@ module.exports = {
     const vc = msg.client.voice.connections.get(msg.guild.id);
     if (!vc) return;
     vc.disconnect();
+    msg.channel.send('stopping audio', {code: true});
   }
 };

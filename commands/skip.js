@@ -6,6 +6,6 @@ module.exports = {
   execute: msg => {
     const vc = msg.client.voice.connections.get(msg.guild.id);
     if (!vc) return;
-    vc.dispatcher.end();
+    vc.dispatcher.finish();
   }
 };
