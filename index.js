@@ -72,7 +72,6 @@ const loadCommand = f => {
       const cmd = require(f);
       cmd.path = f;
       commands.set(cmd.name, cmd);
-      logger.log('info', `loaded command ${cmd.name}`);
       resolve();
     }
     catch (e) {
@@ -82,7 +81,6 @@ const loadCommand = f => {
 };
 
 const loadCommands = () => {
-  logger.log('info', 'loading commands');
   return fs.readdirAsync('commands')
     .then(files => {
       const filePromises = files.filter(f => f.endsWith('.js'))
@@ -108,12 +106,9 @@ const unloadCommand = f => {
 
 const reloadCommands = () => {
   logger.log('info', 'reloading commands');
-  return new Promise(resolve => {
-    const unloadPromises = commands.array().map(cmd => unloadCommand(cmd));
-    return Promise.all(unloadPromises)
-      .then(loadCommands)
-      .then(resolve);
-  });
+  const unloadPromises = commands.array().map(cmd => unloadCommand(cmd));
+  return Promise.all(unloadPromises)
+    .then(loadCommands);
 };
 
 fs.watch('commands', (event, file) => {
@@ -146,6 +141,7 @@ globals = {
   nowPlaying: ''
 };
 
+logger.log('info', 'loading commands');
 loadCommands()
   .then(() => client.login(config.token))
   .catch(e => logger.log('error', `error loading commands: ${e}`));
