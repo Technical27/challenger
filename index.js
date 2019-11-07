@@ -1,12 +1,15 @@
 const Discord = require('discord.js');
-const config = require('./config/bot.json');
 const Promise = require('bluebird');
-const fs = Promise.promisifyAll(require('fs'));
-const path = require('path');
 const decache = require('decache');
 const chalk = require('chalk');
 const winston = require('winston');
+
+const fs = Promise.promisifyAll(require('fs'));
+const path = require('path');
+
 const models = require('./db');
+const config = require('./config/bot.json');
+
 const client = new Discord.Client();
 const commands = new Discord.Collection();
 
